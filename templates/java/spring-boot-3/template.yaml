@@ -1,7 +1,7 @@
 apiVersion: scaffolder.backstage.io/v1beta3
 kind: Template
 metadata:
-  name: springboot-3-template - Github
+  name: springboot-3-template-github
   title: Spring Boot 3 Template
   description: Create a springboot microservice
   annotations:
