@@ -62,33 +62,6 @@ spec:
                     '404':
                         description: Address not found
                         content: {}
-        '/ws/{zip-code}/json2':
-            get:
-                tags:
-                    - Address
-                summary: Find Address by zip-code
-                description: Returns a single Address
-                operationId: getAddressByzip-code
-                parameters:
-                    - name: zip-code
-                      in: path
-                      description: zip-code to search
-                      required: true
-                      schema:
-                        type: string
-                responses:
-                    '200':
-                        description: successful operation
-                        content:
-                            application/json:
-                                schema:
-                                    $ref: '#/components/schemas/Address'
-                    '400':
-                        description: Invalid zip-code supplied
-                        content: {}
-                    '404':
-                        description: Address not found
-                        content: {}
     components:
         schemas:
             Address:
