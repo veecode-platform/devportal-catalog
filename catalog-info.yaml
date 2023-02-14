@@ -1,9 +1,9 @@
 apiVersion: backstage.io/v1alpha1
 kind: Location
 metadata:
-  name: devportal-public catalog-info
+  name: github-catalog-info
   description: Importing apis
 spec:
   targets:
     - ./api/*.yaml
-    - ./templates/devportal-templates.yaml
+    - ./templates/*.yaml
