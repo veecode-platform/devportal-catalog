@@ -1,0 +1,154 @@
+apiVersion: scaffolder.backstage.io/v1beta3
+kind: Template
+metadata:
+  name: springboot-3-template - Github
+  title: Spring Boot 3 Template
+  description: Create a springboot microservice
+  annotations:
+    backstage.io/techdocs-ref: dir:.
+  tags:
+    - recommended
+    - platform-templates
+    - java
+spec:
+  owner: veecode/platform
+  type: microservice
+  parameters:
+    - title: Project Configuration
+      required:
+        - component_id
+      properties:
+        component_id:
+          title: Project name
+          type: string
+          description: Name of the project
+          ui:autofocus: true
+          ui:field: EntityNamePicker
+        description:
+          title: Description
+          type: string
+          description: Help others understand what this application is for.
+          ui:options: rows:5
+
+        artifact:
+          title: Artifact
+          type: string
+          description: Java Artifact
+          default: "demo"
+
+        java_version:
+          title: Java version
+          type: string
+          description: Specifies the java version
+          default: "11"
+          enum:
+            - "17"
+            - "19"
+          enumNames:
+            - "17"
+            - "19"
+        application_port:
+          title: Application Port
+          type: string
+          description: Name of the project
+          default: "8080"
+
+    - title: CI/CD Configurations
+      required:
+        - argoRepoUrl
+      description: ArgoCD repository configuration
+      properties:
+        argoRepoUrl:
+          type: string
+          ui:field: RepoUrlPicker
+          ui:options:
+            allowedHosts:
+              - github.com
+            allowedOwners:
+              - veecode-platform
+            allowedRepos:
+              - argocd-repository
+
+
+    - title: Spec House Configuration
+      required:
+        - specPublish
+        - branchName
+      description: Spec House Configuration
+      properties:
+        branchName:
+          title: Branch name
+          type: string
+          description: Name of the branch
+
+        specTags:
+          title: Tags
+          type: string
+          description: Inputs tags separated by comma(,)
+        
+        specPublish:
+          type: string
+          ui:field: RepoUrlPicker
+          ui:options:
+            allowedHosts:
+              - github.com
+            allowedOwners:
+              - veecode-platform
+            allowedRepos:
+              - devportal-spechouse
+
+    - title: Choose a location
+      required:
+        - repoUrl
+      properties:
+        repoUrl:
+          title: Repository Location
+          type: string
+          ui:field: RepoUrlPicker
+          ui:options:
+            allowedHosts:
+              - github.com
+            allowedOwners:
+              - veecode-platform
+  steps:
+    - id: template
+      name: Fetch Skeleton + Template
+      action: fetch:template
+      input:
+        url: ./skeleton
+        # copyWithoutRender:
+        # - .github/workflows/*
+        values:
+          component_id: ${{ parameters.component_id }}
+          description: ${{ parameters.description }}
+          artifact: ${{ parameters.artifact }}
+          java_version: ${{ parameters.java_version }}
+          application_port: ${{ parameters.application_port }}
+          owner: ${{ parameters.owner }}
+          argoRepoUrl: ${{ (parameters.argoRepoUrl | parseRepoUrl).owner }}/${{ (parameters.argoRepoUrl | parseRepoUrl).repo }}
+          specPublish: ${{ (parameters.specPublish | parseRepoUrl).owner }}/${{ (parameters.specPublish | parseRepoUrl).repo }}
+          repoUrl: ${{ (parameters.repoUrl | parseRepoUrl).owner }}/${{ (parameters.repoUrl | parseRepoUrl).repo }}
+          branchName: ${{ parameters.branchName }}
+          specTags: ${{ parameters.specTags }}
+    - id: publish
+      name: Publish
+      action: publish:github
+      input:
+        allowedHosts:
+          - github.com
+        description: This is ${{ parameters.component_id }}
+        repoUrl: ${{ parameters.repoUrl }}
+        repoVisibility: private
+    - id: register
+      name: Register
+      action: catalog:register
+      input:
+        repoContentsUrl: ${{ steps.publish.output.repoContentsUrl }}
+        catalogInfoPath: /catalog-info.yaml
+  output:
+    links:
+      - title: Repository
+        url: ${{ steps['publish'].output.remoteUrl }}
+      - title: Open in catalog
+        icon: catalog
+        entityRef: ${{ steps['register'].output.entityRef }}

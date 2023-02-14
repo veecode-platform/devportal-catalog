@@ -1,0 +1,8 @@
+_id: wrk_${{values.component_id}}
+type: Workspace
+parentId: null
+modified: 1674571802202
+created: 1674571802202
+name: ${{values.component_id}}.yaml
+description: ""
+scope: design
