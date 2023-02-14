@@ -55,7 +55,6 @@ jobs:
           del(.metadata.creationTimestamp) | del(.status) |
           .metadata.labels."backstage.io/kubernetes-id"="${{values.component_id}}"''' -i ./k8s/service.yaml
           kubectl create ingress ${{values.component_id}} --class=kong --namespace=vkpr \
-          --annotation "backstage.io/kubernetes-id"= "${{values.component_id}}" \
           --annotation "cert-manager.io/cluster-issuer"="certmanager-issuer" \
           --annotation "konghq.com/https-redirect-status-code"="308" \
           --annotation "kubernetes.io/tls-acme"="true" \
@@ -64,6 +63,7 @@ jobs:
           --annotation "konghq.com/protocols"="https" \
           --rule="rest.platform.vee.codes/${{values.component_id}}*=${{values.component_id}}:${{ values.application_port }},tls=rest.platform.vee.codes-tls" --dry-run=client -o=yaml > ./k8s/ingress.yaml
           yq e 'del(.metadata.creationTimestamp) | del(.status)' -i ./k8s/ingress.yaml
+          yq e '.metadata.labels."backstage.io/kubernetes-id"="${{values.component_id}}"' -i ./k8s/ingress.yaml
 
       - name: Publish K8S Artifact
         uses: dmnemec/copy_file_to_another_repo_action@main
