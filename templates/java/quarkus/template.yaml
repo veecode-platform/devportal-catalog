@@ -1,7 +1,7 @@
 apiVersion: scaffolder.backstage.io/v1beta3
 kind: Template
 metadata:
-  name: quarkus-template
+  name: quarkus-template-github
   title: Quarkus Template
   description: Create a quarkus microservice
   annotations:
