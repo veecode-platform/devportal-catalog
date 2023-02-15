@@ -4,8 +4,6 @@ name: Build Publish Spring Boot
 on:
   push:
     branches: [ master ]
-  pull_request:
-    branches: [ master ]
 
 jobs:
   build-project:
@@ -70,6 +68,7 @@ jobs:
         env:
           API_TOKEN_GITHUB: ${{'${{'}} secrets.API_TOKEN_GITHUB ${{'}}'}}
         with:
+          use_rsync: true
           source_file: 'k8s/'
           destination_repo: ${{ values.argoRepoUrl }}
           destination_folder: '/${{values.component_id}}/'
