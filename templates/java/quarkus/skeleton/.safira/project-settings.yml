@@ -1,0 +1,8 @@
+project:
+  name: ${{values.component_id}}
+  description: ${{values.description}}
+  java:
+    package: codes.platform.${{values.artifact}}
+  language: java
+  framework: quarkus
+  applicationPort: ${{values.application_port}}
