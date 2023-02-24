@@ -7,5 +7,6 @@ spec:
   targets:
     - ./nextJS/template.yaml
     - ./devops/eks/template.yaml
+    - ./devops/rds/template.yaml
     - ./java/spring-boot-3/template.yaml
     - ./java/quarkus/template.yaml
