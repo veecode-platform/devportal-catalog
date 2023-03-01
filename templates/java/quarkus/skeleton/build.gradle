@@ -23,8 +23,8 @@ group 'vee.codes'
 version '1.0.0-SNAPSHOT'
 
 java {
-    sourceCompatibility = JavaVersion.VERSION_${{ values.java_version }}
-    targetCompatibility = JavaVersion.VERSION_${{ values.java_version }}
+    sourceCompatibility = JavaVersion.VERSION_${{ values.javaVersion }}
+    targetCompatibility = JavaVersion.VERSION_${{ values.javaVersion }}
 }
 
 test {

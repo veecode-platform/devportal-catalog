@@ -1,9 +1,9 @@
-_id: spc_${{values.component_id}}
+_id: spc_${{values.componentId}}
 type: ApiSpec
-parentId: wrk_${{values.component_id}}
+parentId: wrk_${{values.componentId}}
 modified: 1674573608115
 created: 1674571804450
-fileName: ${{values.component_id}}.yaml
+fileName: ${{values.componentId}}.yaml
 contents: "openapi: 3.0.0
 
   info:
@@ -20,7 +20,7 @@ contents: "openapi: 3.0.0
 
   \  version: 1.0.2
 
-  \  title: ${{values.component_id}}
+  \  title: ${{values.componentId}}
 
   \  termsOfService: http://swagger.io/terms/
 

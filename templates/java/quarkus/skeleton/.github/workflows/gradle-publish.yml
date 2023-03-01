@@ -13,10 +13,10 @@ jobs:
 
     steps:
       - uses: actions/checkout@v3
-      - name: Set up JDK ${{ values.java_version }}
+      - name: Set up JDK ${{ values.javaVersion }}
         uses: actions/setup-java@v3
         with:
-          java-version: ${{ values.java_version }}
+          java-version: ${{ values.javaVersion }}
           distribution: 'adopt'
       - name: Validate Gradle wrapper
         uses: gradle/wrapper-validation-action@e6e38bacfdf1a337459f332974bb2327a31aaf4b
@@ -43,12 +43,13 @@ jobs:
           -Dquarkus.kubernetes.ingress.annotations."konghq.com/protocols"=https \
           -Dquarkus.kubernetes.ingress.annotations."konghq.com/strip-path"=true \
           -Dquarkus.kubernetes.ingress.annotations."kubernetes.io/tls-acme"=true
+      
+      {%- if values.exportKongKubernetes %}
 
-      - name: Setting up kubectl client
-        uses: azure/setup-kubectl@v3
-        with:
-           version: 'latest' # default is latest stable
-        id: install
+      - name: Generating Kubernetes config for Kong
+        run: |
+          npx insomnia-inso generate config "$(cat .insomnia/ApiSpec/spc_*.yml | yq '.fileName')" --type kubernetes --output ./k8s/kong-kubernetes.yaml
+      {%- endif %}
 
       - name: Publish K8S Artifact
         uses: dmnemec/copy_file_to_another_repo_action@main
@@ -57,7 +58,7 @@ jobs:
         with:
           source_file: 'build/kubernetes/kubernetes.yml'
           destination_repo: ${{ values.argoRepoUrl }}
-          destination_folder: '/${{values.component_id}}/'
+          destination_folder: '/${{values.componentId}}/'
           destination_branch: 'master'
           user_email: 'veecode-bot@vee.codes'
           user_name: 'veecode-bot'
@@ -73,7 +74,7 @@ jobs:
           chmod a+x /usr/local/bin/yq
           yq --version
 
-      - name: "Check if has insomnia workspace"
+      - name: "Check if insomnia workspace is present"
         id: check_inso_workspace
         uses: andstor/file-existence-action@v1
         with:

@@ -1,17 +1,19 @@
 apiVersion: backstage.io/v1alpha1
 kind: Component
 metadata:
-  name: ${{values.component_id}}
+  name: ${{values.componentId}}
   {%- if values.description %}
   description: ${{values.description | dump}}
   {%- endif %}
   annotations:
     backstage.io/techdocs-ref: dir:.
-    backstage.io/kubernetes-id: ${{values.component_id | dump}}
+    backstage.io/kubernetes-id: ${{values.componentId | dump}}
     github.com/project-slug: ${{values.destination.owner + "/" + values.destination.repo}}
-    vault.io/secrets-path: devportal
-    grafana/tag-selector: "managed by vkpr"
-    grafana/alert-label-selector: "alertname=teste-aviso"
+    vault.io/secrets-path: '${{values.destination.repo}}'
+    grafana/tag-selector: '${{values.destination.repo}}'
+    grafana/alert-label-selector: "alertname=${{values.destination.repo}}"
+    argocd/proxy-url: '/argocd/api'
+    argocd/app-name: '${{values.destination.repo}}'
 spec:
   type: devops
   lifecycle: experimental

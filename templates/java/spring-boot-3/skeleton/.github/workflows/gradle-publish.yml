@@ -11,20 +11,22 @@ jobs:
 
     steps:
       - uses: actions/checkout@v3
-      - name: Set up JDK ${{ values.java_version }}
+      - name: Set up JDK ${{ values.javaVersion }}
         uses: actions/setup-java@v3
         with:
-          java-version: ${{ values.java_version }}
+          java-version: ${{ values.javaVersion }}
           distribution: 'adopt'
+      
       - name: Validate Gradle wrapper
         uses: gradle/wrapper-validation-action@e6e38bacfdf1a337459f332974bb2327a31aaf4b
+      
       - name: Build with Gradle
         env:
           BOOT_DOCKER_USERNAME: ${{'${{'}} secrets.DOCKER_USERNAME ${{'}}'}} #used by build.gradle
           BOOT_DOCKER_PASSWORD: ${{'${{'}} secrets.DOCKER_PASSWORD ${{'}}'}} #used by build.gradle      
         run: |
           ./gradlew bootBuildImage \
-          --imageName=docker.io/veecode/${{values.component_id}}:latest \
+          --imageName=docker.io/veecode/${{values.componentId}}:latest \
           --publishImage
 
       - name: Setting up kubectl client
@@ -32,36 +34,48 @@ jobs:
         with:
            version: 'latest' # default is latest stable
         id: install
-      
+
       - name: Creating K8s Artifacts
         run: |
           mkdir k8s/
-          kubectl create deployment ${{values.component_id}} --namespace=vkpr --port=${{ values.application_port }} --replicas=1 \
-          --image=docker.io/veecode/${{values.component_id}}:latest --dry-run=client -o=yaml > ./k8s/deployment.yaml
+          kubectl create deployment ${{values.componentId}} --namespace=vkpr --port=${{ values.applicationPort }} --replicas=1 \
+          --image=docker.io/veecode/${{values.componentId}}:latest --dry-run=client -o=yaml > ./k8s/deployment.yaml
           yq e '''
-          .metadata.labels."backstage.io/kubernetes-id"= "${{values.component_id}}" |
-          .spec.template.metadata.labels."backstage.io/kubernetes-id"= "${{values.component_id}}" |
+          .metadata.labels."backstage.io/kubernetes-id"= "${{values.componentId}}" |
+          .spec.template.metadata.labels."backstage.io/kubernetes-id"= "${{values.componentId}}" |
           .spec.template.spec.containers[0].imagePullPolicy= "IfNotPresent" |
           .spec.template.spec.containers[0].resources.requests.memory= "256Mi" |
           .spec.template.spec.containers[0].resources.limits.memory= "512Mi" |
           del(.status) | del(.metadata.creationTimestamp) | del(.spec.template.metadata.creationTimestamp) | del(.spec.strategy)
           ''' -i ./k8s/deployment.yaml
 
-          kubectl create service clusterip ${{values.component_id}} --namespace=vkpr \
-          --tcp=${{ values.application_port }}:${{ values.application_port }} --dry-run=client -o=yaml > ./k8s/service.yaml
+          kubectl create service clusterip ${{values.componentId}}-service-0 --namespace=vkpr \
+          --tcp=${{ values.applicationPort }}:${{ values.applicationPort }} --dry-run=client -o=yaml > ./k8s/service.yaml
           yq e '''
           del(.metadata.creationTimestamp) | del(.status) |
-          .metadata.labels."backstage.io/kubernetes-id"="${{values.component_id}}"''' -i ./k8s/service.yaml
-          kubectl create ingress ${{values.component_id}} --class=kong --namespace=vkpr \
+          .metadata.labels."backstage.io/kubernetes-id"="${{values.componentId}}"''' -i ./k8s/service.yaml
+          kubectl create ingress ${{values.componentId}} --class=kong --namespace=vkpr \
           --annotation "cert-manager.io/cluster-issuer"="certmanager-issuer" \
           --annotation "konghq.com/https-redirect-status-code"="308" \
           --annotation "kubernetes.io/tls-acme"="true" \
           --annotation "konghq.com/strip-path"="true" \
           --annotation "konghq.com/preserve-host"="true" \
           --annotation "konghq.com/protocols"="https" \
-          --rule="rest.platform.vee.codes/${{values.component_id}}*=${{values.component_id}}:${{ values.application_port }},tls=rest.platform.vee.codes-tls" --dry-run=client -o=yaml > ./k8s/ingress.yaml
+          --rule="rest.platform.vee.codes/${{values.componentId}}*=${{values.componentId}}:${{ values.applicationPort }},tls=rest.platform.vee.codes-tls" --dry-run=client -o=yaml > ./k8s/ingress.yaml
           yq e 'del(.metadata.creationTimestamp) | del(.status)' -i ./k8s/ingress.yaml
-          yq e '.metadata.labels."backstage.io/kubernetes-id"="${{values.component_id}}"' -i ./k8s/ingress.yaml
+          yq e '.metadata.labels."backstage.io/kubernetes-id"="${{values.componentId}}"' -i ./k8s/ingress.yaml
+      
+      {%- if values.exportKongKubernetes %}
+
+      - name: Setup Insomnia CLI
+        uses: kong/setup-inso@v1
+        with:
+          inso-version: 3.12.0
+
+      - name: Generating Kubernetes config for Kong
+        run: |
+          inso generate config "$(cat .insomnia/ApiSpec/spc_*.yml | yq '.fileName')" --type kubernetes --output ./k8s/kong-kubernetes.yaml
+      {%- endif %}
 
       - name: Publish K8S Artifact
         uses: dmnemec/copy_file_to_another_repo_action@main
@@ -71,7 +85,7 @@ jobs:
           use_rsync: true
           source_file: 'k8s/'
           destination_repo: ${{ values.argoRepoUrl }}
-          destination_folder: '/${{values.component_id}}/'
+          destination_folder: '/${{values.componentId}}/'
           destination_branch: 'master'
           user_email: 'veecode-bot@vee.codes'
           user_name: 'veecode-bot'
@@ -87,16 +101,22 @@ jobs:
           chmod a+x /usr/local/bin/yq
           yq --version
 
-      - name: "Check if has insomnia workspace"
+      - name: "Check if insomnia workspace is present"
         id: check_inso_workspace
         uses: andstor/file-existence-action@v1
         with:
           files: ".insomnia/ApiSpec/spc_*.yml"
 
+      - name: Setup Insomnia CLI
+        if: steps.check_inso_workspace.outputs.files_exists == 'true'
+        uses: kong/setup-inso@v1
+        with:
+          inso-version: 3.12.0
+
       - name: Exporting openapi from insomnia workspace
         if: steps.check_inso_workspace.outputs.files_exists == 'true'
         run: |
-          npx insomnia-inso export spec "$(cat .insomnia/ApiSpec/spc_*.yml | yq '.fileName')"  --output ./openapi-swagger.yaml
+          inso export spec "$(cat .insomnia/ApiSpec/spc_*.yml | yq '.fileName')"  --output ./openapi-swagger.yaml
 
       - name: Build devportal template
         env:

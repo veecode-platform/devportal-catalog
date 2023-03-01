@@ -1,4 +1,4 @@
-# ${{ values.component_id }}
+# ${{ values.componentId }}
 
 ${{ values.description }}
 

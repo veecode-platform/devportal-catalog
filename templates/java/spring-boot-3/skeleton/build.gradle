@@ -6,7 +6,7 @@ plugins {
 
 group = 'codes.platform.app-'
 version = '0.0.1-SNAPSHOT'
-sourceCompatibility = '${{values.java_version}}'
+sourceCompatibility = '${{values.javaVersion}}'
 
 configurations {
 	compileOnly {
@@ -20,6 +20,7 @@ repositories {
 
 dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-web'
+	implementation 'javax.annotation:javax.annotation-api:1.3.2'
 	developmentOnly 'org.springframework.boot:spring-boot-devtools'
 	annotationProcessor 'org.springframework.boot:spring-boot-configuration-processor'
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'

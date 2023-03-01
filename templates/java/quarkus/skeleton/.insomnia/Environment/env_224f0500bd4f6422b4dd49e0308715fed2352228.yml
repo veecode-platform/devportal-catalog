@@ -1,6 +1,6 @@
-_id: env_${{values.component_id}}
+_id: env_${{values.componentId}}
 type: Environment
-parentId: wrk_${{values.component_id}}
+parentId: wrk_${{values.componentId}}
 modified: 1674571802204
 created: 1674571802204
 name: Base Environment

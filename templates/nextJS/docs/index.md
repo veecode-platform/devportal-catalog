@@ -45,7 +45,7 @@
 
 ~~~json
 {
-  "name": "${{ values.component_id }}",
+  "name": "${{ values.componentId }}",
   "version": "0.1.0",
   "description": "${{ values.description }}",
   "license": "UNLICENSED",

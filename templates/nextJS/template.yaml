@@ -15,10 +15,10 @@ spec:
   parameters:
     - title: Provide some simple information
       required:
-        - component_id
+        - componentId
         - owner
       properties:
-        component_id:
+        componentId:
           title: Name
           type: string
           description: Unique name of the component
@@ -55,7 +55,7 @@ spec:
         copyWithoutRender:
           - .github/workflows/*
         values:
-          component_id: ${{ parameters.component_id }}
+          componentId: ${{ parameters.componentId }}
           description: ${{ parameters.description }}
           destination: ${{ parameters.repoUrl | parseRepoUrl }}
           owner: ${{ parameters.owner }}
@@ -65,7 +65,7 @@ spec:
       action: publish:github
       input:
         allowedHosts: ["github.com"]
-        description: This is ${{ parameters.component_id }}
+        description: This is ${{ parameters.componentId }}
         repoUrl: ${{ parameters.repoUrl }}
 
     - id: register

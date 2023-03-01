@@ -16,9 +16,9 @@ spec:
   parameters:
     - title: Project Configuration
       required:
-        - component_id
+        - componentId
       properties:
-        component_id:
+        componentId:
           title: Project name
           type: string
           description: Name of the project
@@ -36,7 +36,7 @@ spec:
           description: Java Artifact
           default: "demo"
 
-        java_version:
+        javaVersion:
           title: Java version
           type: string
           description: Specifies the java version
@@ -47,7 +47,7 @@ spec:
           enumNames:
             - "17"
             - "19"
-        application_port:
+        applicationPort:
           title: Application Port
           type: string
           description: Name of the project
@@ -68,6 +68,10 @@ spec:
               - veecode-platform
             allowedRepos:
               - argocd-repository
+        exportKongKubernetes:
+          title: Export Kong for Kubernetes
+          type: boolean
+          default: false
 
 
     - title: Spec House Configuration
@@ -119,24 +123,26 @@ spec:
         # copyWithoutRender:
         # - .github/workflows/*
         values:
-          component_id: ${{ parameters.component_id }}
+          componentId: ${{ parameters.componentId }}
           description: ${{ parameters.description }}
           artifact: ${{ parameters.artifact }}
-          java_version: ${{ parameters.java_version }}
-          application_port: ${{ parameters.application_port }}
+          javaVersion: ${{ parameters.javaVersion }}
+          applicationPort: ${{ parameters.applicationPort }}
           owner: ${{ parameters.owner }}
           argoRepoUrl: ${{ (parameters.argoRepoUrl | parseRepoUrl).owner }}/${{ (parameters.argoRepoUrl | parseRepoUrl).repo }}
           specPublish: ${{ (parameters.specPublish | parseRepoUrl).owner }}/${{ (parameters.specPublish | parseRepoUrl).repo }}
           repoUrl: ${{ (parameters.repoUrl | parseRepoUrl).owner }}/${{ (parameters.repoUrl | parseRepoUrl).repo }}
           branchName: ${{ parameters.branchName }}
           specTags: ${{ parameters.specTags }}
+          exportKongKubernetes: ${{ parameters.exportKongKubernetes }}
+
     - id: publish
       name: Publish
       action: publish:github
       input:
         allowedHosts:
           - github.com
-        description: This is ${{ parameters.component_id }}
+        description: This is ${{ parameters.componentId }}
         repoUrl: ${{ parameters.repoUrl }}
         repoVisibility: private
     - id: register
