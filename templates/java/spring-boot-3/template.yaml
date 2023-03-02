@@ -72,7 +72,11 @@ spec:
           title: Export Kong for Kubernetes
           type: boolean
           default: false
-
+        mockserverUrl:
+          title: Mockserver URL
+          type: string
+          description: 'Insert your mockerser host. ex.: https://mockserver.platform.vee.codes'
+          default: ''
 
     - title: Spec House Configuration
       required:
@@ -135,6 +139,7 @@ spec:
           branchName: ${{ parameters.branchName }}
           specTags: ${{ parameters.specTags }}
           exportKongKubernetes: ${{ parameters.exportKongKubernetes }}
+          mockserverUrl: ${{ parameters.mockserverUrl }}
 
     - id: publish
       name: Publish
