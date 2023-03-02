@@ -70,10 +70,14 @@ spec:
             allowedRepos:
               - argocd-repository
         exportKongKubernetes:
-          title: Export Kong Kubernetes
+          title: Export Kong for Kubernetes
           type: boolean
-          description: Export Kong for Kubernetes
           default: false
+        mockserverUrl:
+          title: Mockserver URL
+          type: string
+          description: 'Insert your mockerser host. ex.: https://mockserver.platform.vee.codes'
+          default: ''
 
     - title: Choose a location
       required:
@@ -110,16 +114,7 @@ spec:
               - veecode-platform
             allowedRepos:
               - devportal-spechouse
-        exportKongKubernetes:
-          title: Export Kong for Kubernetes
-          type: boolean
-          default: false
-        mockserverUrl:
-          title: Mockserver URL
-          type: string
-          description: 'Insert your mockerser host. ex.: https://mockserver.platform.vee.codes'
-          default: ''
-                        
+
   steps:
     - id: template
       name: Fetch Skeleton + Template
@@ -136,7 +131,6 @@ spec:
           argoRepoUrl: ${{ (parameters.argoRepoUrl | parseRepoUrl).owner }}/${{ (parameters.argoRepoUrl | parseRepoUrl).repo }}
           specPublish: ${{ (parameters.specPublish | parseRepoUrl).owner }}/${{ (parameters.specPublish | parseRepoUrl).repo }}
           branchName: ${{ parameters.branchName }}
-          exportKongKubernetes: ${{ parameters.exportKongKubernetes }}
           exportKongKubernetes: ${{ parameters.exportKongKubernetes }}
           mockserverUrl: ${{ parameters.mockserverUrl }}          
           
