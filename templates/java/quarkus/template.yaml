@@ -87,6 +87,7 @@ spec:
             allowedHosts:
               - github.com
             allowedOwners:
+              - devportal-catalog
               - veecode-platform
 
     - title: Spec House Configuration

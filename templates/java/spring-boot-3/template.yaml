@@ -103,6 +103,7 @@ spec:
             allowedOwners:
               - veecode-platform
             allowedRepos:
+              - devportal-catalog
               - devportal-spechouse
 
     - title: Choose a location
