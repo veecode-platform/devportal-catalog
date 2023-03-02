@@ -40,7 +40,7 @@ spec:
           title: Java version
           type: string
           description: Specifies the java version
-          default: "11"
+          default: "17"
           enum:
             - "17"
             - "19"
