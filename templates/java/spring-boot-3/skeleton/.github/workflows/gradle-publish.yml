@@ -122,16 +122,16 @@ jobs:
           inso export spec "$(cat .insomnia/ApiSpec/spc_*.yml | yq '.fileName')"  --output ./openapi-swagger.yaml
 
       - name: Publishing spec to mockserver
-        if: "${{ env.MOCK_SERVER != '' }}"
+        if: "${{'${{'}} env.MOCK_SERVER != '' ${{'}}'}}"
         continue-on-error: true
         run: |
           NAME=`echo $GITHUB_REPOSITORY |awk -F / '{print $2 }'`
           touch MOCK.yaml
           yq 'with(.paths; with_entries(.key |=strenv(NAME) + .))' ./openapi-swagger.yaml >> MOCK.yaml
           cat MOCK.yaml | python -c 'import sys, yaml, json; print(json.dumps(yaml.safe_load(sys.stdin.read()), indent=2, sort_keys=False))' > MOCK.json
-          curl --max-time 30 -v -X PUT "${{ env.MOCK_SERVER }}/mockserver/openapi$([ ! -z "$API_KEY" ] && echo "?apikey=${{ secrets.API_KEY }}")" -d "{"specUrlOrPayload": $(cat $PWD/MOCK.json)}"
+          curl --max-time 30 -v -X PUT "${{'${{'}} env.MOCK_SERVER ${{'}}'}}/mockserver/openapi$([ ! -z "$API_KEY" ] && echo "?apikey=${{ secrets.API_KEY }}")" -d "{"specUrlOrPayload": $(cat $PWD/MOCK.json)}"
           echo "Adding mockserver address to spec"
-          yq ".servers += [{\"url\": \"${{ env.MOCK_SERVER }}$([[ ! "${{ env.MOCK_SERVER }}" == */ ]] && echo "/")${NAME}\"}]" -i ./openapi-swagger.yaml
+          yq ".servers += [{\"url\": \"${{'${{'}} env.MOCK_SERVER ${{'}}'}}$([[ ! "${{'${{'}} env.MOCK_SERVER ${{'}}'}}" == */ ]] && echo "/")${NAME}\"}]" -i ./openapi-swagger.yaml
 
       - name: Build devportal template
         env:
