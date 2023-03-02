@@ -53,21 +53,7 @@ contents: "openapi: 3.0.0
   paths: {}
 
 
-  components:
-
-  \  schemas:
-
-  \    Health:
-
-  \      type: object
-
-  \      properties:
-
-  \        status:
-
-  \          type: string
-
-  \          example: UP
+  components: {}
 
   \     "
 contentType: yaml
