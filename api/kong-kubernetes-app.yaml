@@ -47,7 +47,6 @@ spec:
                         description: health not found
     servers:
         - url: https://petstore.swagger.io/v2
-        - url: https://mockserver-luangazin.cloud.okteto.net/kong-kubernetes-app
     components:
         schemas:
             Health:
