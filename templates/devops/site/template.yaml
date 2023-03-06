@@ -1,64 +1,34 @@
 apiVersion: scaffolder.backstage.io/v1beta3
 kind: Template
 metadata:
-  name: terraform-rds-template-github
-  title: RDS Template
-  description: RDS Template using Terraform and Github Actions
+  name: terraform-site-template-github
+  title: AWS Site S3 Template
+  description: Provision AWS Site S3 using Terraform and Github Actions
   annotations:
     backstage.io/techdocs-ref: dir:.
   tags:
     - platform-templates
-    - rds
+    - s3
+    - site
     - terraform
 spec:
   owner: veecode/platform
   type: devops
   parameters:
-    - title: RDS Configuration
+    - title: Site Configuration
       required:
         - name
-        - username
-        - password
-        - instance_name
-        - instance_type
+        - domain
       properties:
-        instance_name:
-          title: RDS Instance Name
-          type: string
-          description: Specifies the RDS Instance Name
-        instance_type:
-          title: RDS Instance Type
-          type: string
-          description: Specifies the RDS instance type
-          default: db.t3.micro
-          enum:
-            - db.t3.micro
-            - db.m5.large
-            - db.m5.xlarge
-            - db.t4g.micro
-            - db.m6g.large
-            - db.m6g.xlarge
-          enumNames:
-            - "db.t3.micro (vCPU:2, Mem: 1Gib)"
-            - "db.m5.large (vCPU:2, Mem: 8Gib)"
-            - "db.m5.xlarge (vCPU:4, Mem: 16Gib)"
-            - "db.t4g.micro (vCPU:2, Mem: 1Gib) ARM"
-            - "db.m6g.large (vCPU:2, Mem: 8Gib) ARM"
-            - "db.m6g.xlarge (vCPU:4, Mem: 16Gib) ARM"
         name:
-          title: Database Name
+          title: Site name
           type: string
-          description: Specifies the Database Name
-        username:
-          title: Username
+          description: Specifies the site name
+        domain:
+          title: Domain site name
           type: string
-          description: Specifies the DB Username
-        password:
-          title: Password
-          type: string
-          ui:widget: password
-          description: Specifies the DB Password
-
+          description: Specifies the domain name
+        
     - title: Terraform Configuration
       required:
         - terraformStateBucketName
@@ -97,7 +67,7 @@ spec:
         repoUrl:
           title: Repository Location
           type: string
-          description: Choose a location to create the RDS Pipeline
+          description: Choose a location to create the EKS Cluster Pipeline
           ui:field: RepoUrlPicker
           ui:options:
             allowedHosts:
@@ -112,10 +82,7 @@ spec:
         url: ./skeleton      
         values:
           name: ${{ parameters.name }}
-          username: ${{ parameters.username }}
-          password: ${{ parameters.password }}
-          instance_name: ${{ parameters.instance_name }}
-          instance_type: ${{ parameters.instance_type }}
+          domain: ${{ parameters.domain }}
           terraformStateBucketName: ${{ parameters.terraformStateBucketName }}
           destination: ${{ (parameters.repoUrl | parseRepoUrl).owner }}/${{ (parameters.repoUrl | parseRepoUrl).repo }}
           owner: ${{ parameters.owner }}
@@ -134,7 +101,7 @@ spec:
       input:
         allowedHosts:
           - github.com
-        description: RDS Name ${{ parameters.name }}
+        description: Site ${{ parameters.domain }}
         repoUrl: ${{ parameters.repoUrl }}
     
     - id: register

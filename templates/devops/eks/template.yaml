@@ -81,15 +81,15 @@ spec:
         
     - title: Terraform Configuration
       required:
-        - terraform_state_bucket_name
-        - terraform_state_bucket_region
+        - terraformStateBucketName
+        - terraformStateBucketRegion
       properties:
-        terraform_state_bucket_name:
-          title: Terraform State Bucket ARN
+        terraformStateBucketName:
+          title: Terraform State Bucket Name
           type: string
           description: Specifies your Terraform State Bucket
 
-        terraform_state_bucket_region:
+        terraformStateBucketRegion:
           title: Bucket Region
           type: string
           description: Specifies the Terraform State Bucket region
@@ -137,10 +137,10 @@ spec:
           capacity_type: ${{ parameters.capacity_type }}
           node_quantity: ${{ parameters.node_quantity }}
           max_node_quantity: ${{ parameters.max_node_quantity }}
-          terraform_state_bucket_name: ${{ parameters.terraform_state_bucket_name }}
+          terraformStateBucketName: ${{ parameters.terraformStateBucketName }}
           destination: ${{ (parameters.repoUrl | parseRepoUrl).owner }}/${{ (parameters.repoUrl | parseRepoUrl).repo }}
           owner: ${{ parameters.owner }}
-          terraform_state_bucket_region: ${{ parameters.terraform_state_bucket_region }}
+          terraformStateBucketRegion: ${{ parameters.terraformStateBucketRegion }}
     
     - name: Check Infracost
       if: ${{ parameters.infracost === false }}

@@ -1,7 +1,7 @@
 terraform {
   backend "s3" {
-    bucket = "${{ values.terraform_state_bucket_name }}"
+    bucket = "${{ values.terraformStateBucketName }}"
     key    = "${{ values.eks_cluster_name }}/terraform.tfstate"
-    region = "${{ values.terraform_state_bucket_region }}"
+    region = "${{ values.terraformStateBucketRegion }}"
   }
 }
