@@ -15,7 +15,7 @@ metadata:
     argocd/proxy-url: '/argocd/api'
     argocd/app-name: ${{values.componentId | dump}}
 spec:
-  type: devops
+  type: service
   lifecycle: experimental
   owner: admin
 
