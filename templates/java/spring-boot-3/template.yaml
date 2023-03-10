@@ -53,6 +53,28 @@ spec:
           description: Name of the project
           default: "8080"
 
+    - title: Database Configuration
+      properties:
+        database:
+          title: Select a database
+          type: string
+          default: 'none'
+          enum:
+            - 'none'
+            - 'postgresql'
+            - 'mysql'
+            - 'mariadb'
+            - 'oracle'
+        dbUsername:
+          title: Username
+          type: string
+          description: Specifies the database username
+        dbPassword:
+          title: Password
+          type: string
+          description: Specifies the database password
+          ui:widget: password
+
     - title: CI/CD Configurations
       required:
         - argoRepoUrl
@@ -133,6 +155,9 @@ spec:
           artifact: ${{ parameters.artifact }}
           javaVersion: ${{ parameters.javaVersion }}
           applicationPort: ${{ parameters.applicationPort }}
+          database: ${{ parameters.database }}
+          dbUsername: ${{ parameters.dbUsername }}
+          dbPassword: ${{ parameters.dbPassword }}
           owner: ${{ parameters.owner }}
           argoRepoUrl: ${{ (parameters.argoRepoUrl | parseRepoUrl).owner }}/${{ (parameters.argoRepoUrl | parseRepoUrl).repo }}
           specPublish: ${{ (parameters.specPublish | parseRepoUrl).owner }}/${{ (parameters.specPublish | parseRepoUrl).repo }}
