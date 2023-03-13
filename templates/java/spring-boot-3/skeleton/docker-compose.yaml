@@ -24,8 +24,74 @@ services:
       - postgres-compose
     networks:
       - postgres-compose-network
-
 networks: 
   postgres-compose-network:
     driver: bridge
 {%- endif %}
+
+{%- if values.database == 'mysql' %}
+version: '3'
+services:
+  mysql-compose:
+    image: mysql
+    environment:
+      MYSQL_DATABASE: ${{ values.database }}_db
+      MYSQL_USER: ${{ values.dbUsername }}
+      MYSQL_PASSWORD: ${{ values.dbPassword }}
+      MYSQL_ROOT_PASSWORD: ${{ values.dbPassword }}
+    ports:
+      - "3306:3306"
+    expose:
+      - "3306"
+    volumes:
+      - my-db:/var/lib/mysql
+  adminer:
+    image: adminer
+    ports:
+      - 8080:8080
+volumes:
+  my-db:
+{%- endif %}
+
+{%- if values.database == 'mariadb' %}
+version: '3'
+services:
+  mariadb-compose:
+    image: mariadb
+    environment:
+      MARIADB_DATABASE: ${{ values.database }}_db
+      MARIADB_USER: ${{ values.dbUsername }}
+      MARIADB_PASSWORD: ${{ values.dbPassword }}
+      MARIADB_ROOT_PASSWORD: ${{ values.dbPassword }}
+    ports:
+      - "3306:3306"
+    expose:
+      - "3306"
+    volumes:
+      - my-db:/var/lib/mariadb
+  adminer:
+    image: adminer
+    ports:
+      - 8080:8080
+volumes:
+  my-db:
+{%- endif %}
+
+{%- if values.database == 'oracle' %}
+version: '3'
+services:
+  oracle-db:
+    image: container-registry.oracle.com/database/enterprise:latest
+    environment:
+      - ORACLE_SID=ORCLCDB
+      - ORACLE_PDB=${{ values.database }}_db
+      - ORACLE_PWD=${{ values.dbPassword }}
+    ports:
+      - 1521:1521
+    volumes:
+      - oracle-data:/opt/oracle/oradata
+      - oracle-backup:/opt/oracle/backup
+volumes:
+  oracle-data:
+  oracle-backup:
+# {%- endif %}
